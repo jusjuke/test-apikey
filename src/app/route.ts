@@ -1,56 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { handleApiKeyValidation } from '@/components/handlers/apiKeyHandler';
 
-export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-  // Dashboard route
-  if (pathname === '/dashboard') {
-    return NextResponse.next();
-  }
-
-  // API Playground route
-  if (pathname === '/playground') {
-    return NextResponse.next();
-  }
-
-  // Protected API route
-  if (pathname === '/api/protected' && request.method === 'POST') {
-    try {
-      const body = await request.json();
-      const { apiKey } = body;
-
-      // API key validation logic
-      const isValid = apiKey && apiKey.length > 10;
-
-      if (!isValid) {
-        return NextResponse.json(
-          { error: 'Invalid API key' },
-          { status: 401 }
-        );
-      }
-
-      return NextResponse.json(
-        { message: 'Valid API key' },
-        { status: 200 }
-      );
-    } catch (error) {
-      return NextResponse.json(
-        { error: 'Invalid request' },
-        { status: 400 }
-      );
-    }
-  }
-
-  // Default route (can be modified as needed)
-  return NextResponse.next();
+// Handle GET requests to the root path
+export async function GET() {
+  // Redirect to dashboard
+  return NextResponse.redirect(new URL('/dashboard', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'));
 }
 
-// Configure which routes should be handled by middleware
-export const config = {
-  matcher: [
-    '/dashboard',
-    '/playground',
-    '/api/protected'
-  ]
-}; 
+// Handle POST requests for API key validation
+export async function POST(request: Request) {
+  return handleApiKeyValidation(request);
+} 
