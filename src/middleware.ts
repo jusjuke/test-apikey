@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-export function middleware(request: NextRequest) {
-  // Add your middleware logic here
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request })
+  
+  if (!token) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/'
+    return NextResponse.redirect(url)
+  }
+  
   return NextResponse.next()
 }
 
-// Configure which routes should be handled by middleware
 export const config = {
   matcher: [
     '/dashboard',

@@ -1,6 +1,7 @@
 import './globals.css';
 
 import { SupabaseProvider } from '@/components/SupabaseProvider';
+import { SessionProvider } from "next-auth/react"
 
 
 
@@ -22,7 +23,7 @@ export default function RootLayout({
 
         <SupabaseProvider>
 
-          {children}
+          <SessionProvider>{children}</SessionProvider>
 
         </SupabaseProvider>
 
